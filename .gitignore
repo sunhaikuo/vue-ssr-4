@@ -1,0 +1,13 @@
+
+.history
+node_modules
+dist
+release
+.DS_Store
+node-debug*
+logs/*
+nbproject
+.idea/
+tmp
+/.vscode
+logs
