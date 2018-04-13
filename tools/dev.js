@@ -3,25 +3,43 @@ const wpCfg = require('./webpack.js')
 const wpServerCfg = require('./webpack.server.js')
 const compiler = webpack(wpCfg.getConfig())
 const serverCompiler = webpack(wpServerCfg)
-const fs = require('fs-extra')
-const path = require('path')
+const server = require('./server')
 
-fs.removeSync(path.resolve('./build'))
+function packClient() {
+    return new Promise((resolve, reject) => {
+        webpack(wpCfg.getConfig(), (err, stats) => {
+            if (err === null && stats.compilation.errors.length === 0) {
+                console.log('编译成功')
+                resolve(true)
+            } else {
+                console.log('编译出现错误...')
+                console.log(stats.compilation.errors[0].message)
+                reject(false)
+            }
+        })
+    })
+}
 
-compiler.watch({}, (err, stats) => {
-    if (err === null && stats.compilation.errors.length === 0) {
-        console.log('编译成功')
-    } else {
-        console.log('编译出现错误...')
-        console.log(stats.compilation.errors, err)
-    }
-})
+function packServer() {
+    return new Promise((resolve, reject) => {
+        webpack(wpServerCfg, (err, stats) => {
+            if (err === null && stats.compilation.errors.length === 0) {
+                console.log('编译成功')
+                resolve(true)
+            } else {
+                console.log('编译出现错误...')
+                console.log(stats.compilation.errors[0].message)
+                reject(false)
+            }
+        })
+    })
+}
 
-serverCompiler.watch({}, (err, stats) => {
-    if (err === null && stats.compilation.errors.length === 0) {
-        console.log('编译成功')
-    } else {
-        console.log('编译出现错误...')
-        console.log(stats.compilation.errors[0].message, err)
-    }
-})
+Promise.all([packClient(), packServer()])
+    .then(() => {
+        console.log('Client/Server全部编译成功！')
+        server()
+    })
+    .catch(e => {
+        console.log(e)
+    })

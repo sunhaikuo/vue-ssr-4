@@ -6,16 +6,15 @@ Vue.use(Vuex)
 Vue.use(VueAxios, axios)
 import App from './component/List.vue'
 import store from './store/store_index'
-import {
-    LIST
-} from './store/mutation-types'
-const app = new Vue({ ...App,
+import { LIST } from './store/mutation-types'
+const app = new Vue({
+    ...App,
     store
 })
 
-export default function (context) {
+export default function(context) {
     return new Promise((resolve, reject) => {
-        Vue.axios.get('http://localhost:5000/data').then((response) => {
+        Vue.axios.get('http://localhost:7000/data').then(response => {
             // 获取数据
             const list = response.data.data.liveWodList
             // 把数据存到Vuex里面
@@ -26,5 +25,5 @@ export default function (context) {
         })
         // context.state = store.state
         // resolve(app)
-    });
-};
+    })
+}
